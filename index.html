@@ -5,19 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Surprise Ucapan</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');  
 
     body {
-      margin: 0;
-      font-family: "Poppins", sans-serif;
-      text-align: center;
-      color: white;
-      height: 100vh;
-      background: url('album1.jpg') no-repeat center/cover;
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+        text-align: center;
+        color: white;
+        height: 100vh;
+        background: url('album1.jpg') no-repeat center/cover;
+        overflow-x: hidden;
     }
 
     .ctnr { position: relative; z-index: 2; margin-top: 40px; }
-    .lv img { width: 150px; cursor: pointer; }
+
+    /* LOVE animasi jedag jedug */
+    .lv img {
+      width: 150px;  
+      cursor: pointer;  
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
     .lv p { margin-top: 10px; font-weight: 600; }
 
     .ucapan, .pesanBox { display: none; margin-top: 30px; }
@@ -30,6 +41,7 @@
       display: inline-block;
       font-weight: 600;
     }
+
     .btn {
       padding: 10px 20px;
       margin-top: 15px;
@@ -42,6 +54,7 @@
       color: #fff;
       box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
     }
+
     .pesanBox input {
       padding: 10px;
       width: 80%;
@@ -50,6 +63,7 @@
       font-size: 16px;
       margin-bottom: 10px;
     }
+
     .pesanBox .hasilPesan {
       margin-top: 20px;
       background: rgba(0,0,0,0.5);
@@ -58,6 +72,48 @@
       display: inline-block;
       font-weight: 600;
       white-space: pre-wrap;
+    }
+
+    /* Grid foto kecil */
+    .fotoGrid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      justify-items: center;
+      margin-top: 20px;
+    }
+    .fotoGrid img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+    }
+
+    /* Balon terbang */
+    .balloon {
+      position: fixed;
+      bottom: -100px;
+      font-size: 40px;
+      animation: naik 6s linear infinite;
+      z-index: 1;
+    }
+    @keyframes naik {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-120vh) scale(1.5); opacity: 0; }
+    }
+
+    /* Animasi fade-in dari bawah untuk teks ucapan */
+    .fadeUp {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUpAnim 0.6s forwards;
+    }
+    @keyframes fadeUpAnim {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
@@ -77,7 +133,7 @@
 
     <!-- Box Pesan Manual -->
     <div class="pesanBox" id="pesanBox">
-      <p style="font-weight:600;">Sekarang giliran kamu kirim pesan buat Eja 💌</p>
+      <p style="font-weight:600;">Sekarang giliran ndutt buat pesan untuk ejaa 💌</p>
       <input type="text" id="inputPesan" placeholder="Ketik pesan disini...">
       <br/>
       <button class="btn" id="kirimBtn">Kirim Pesan</button>
@@ -100,11 +156,14 @@
     {gambar: "stiker11.gif", ucapan: "Semoga semua rencana indah ndutt terwujud satu per satu ✨"},
     {gambar: "stiker12.gif", ucapan: "Semoga selalu dilindungi dan dikuatkan dalam segala hal 🌈"},
     {gambar: "stiker13.gif", ucapan: "Olahraga jalan terus nda putus putus ✨"},
-    // ✨ Tambahan 14–16
-    {gambar: "stiker14.gif", ucapan: "Teruss apaa yaa, ndutt makinn cantikk kaya loveni 💕"},
-    {gambar: "stiker15.gif", ucapan: "Oiya ini rezza buatin web sederhana cuman yaa ndutt,ndaa terlalu mewah💐"},
-    {gambar: " stiker16.gif", ucapan: "Jangan lupa rumah filda abis isya ❤️"}, 
-    {gambar: "stiker17.gif", ucapan: "Terakhir Semoga kita dimudahkan sama Allah untuk bersama Amiin 🤍🌻"}
+    {gambar: "stiker14.gif", ucapan: "Teruss apaa yaa, ndutt makinn cantikk kaya loveni yakann 💕"},
+    {gambar: "stiker15.gif", ucapan: "Oiya ini rezza buatin web sederhana cuman yaa ndutt,pusing leza nyoba 20x lebih buatnya😭,jadi ndaa terlalu mewah hihi💐"},
+    {gambar: "stiker16.gif", ucapan: "Jangan lupa rumah filda abis isya ❤️"},  
+    {gambar: "stiker17.gif", ucapan: "Terakhir Semoga kita dimudahkan sama Allah untuk bersama Amiin 🤍🌻"},
+    // 🎉 Slide Foto
+    {foto: ["foto1.jpg","foto2.jpg","foto3.jpg","foto4.jpg"], ucapan: "Happy Birthday yang ke 20 ya ndutt 🎂💐"},
+    // 🎥 Slide Video
+    {video: "video.mp4", ucapan: "Kenangan manis buat ndutt 🤍🌷"}
   ];
 
   let index = 0;
@@ -132,13 +191,65 @@
       tampilkanUcapan();
     } else {
       ucapanBox.style.display = "none";
-      pesanBox.style.display  = "block"; // ✅ Muncul kotak pesan manual
+      pesanBox.style.display  = "block";
+      munculkanBalon();
     }
   });
 
   function tampilkanUcapan(){
-    stikerImg.src = konten[index].gambar;
-    teksUcapan.innerText = konten[index].ucapan;
+    const item = konten[index];
+
+    // efek fade-in teks, tetap di bawah
+    teksUcapan.classList.remove("fadeUp");
+    void teksUcapan.offsetWidth; // trigger reflow
+    teksUcapan.innerText = item.ucapan || "";
+    teksUcapan.classList.add("fadeUp");
+
+    // reset stiker
+    stikerImg.style.display = "none";
+    stikerImg.src = "";
+
+    // hapus grid/foto/video sebelumnya
+    document.querySelectorAll(".fotoGrid, video").forEach(el => el.remove());
+
+    // tampilkan stiker jika ada
+    if(item.gambar){
+      stikerImg.src = item.gambar;
+      stikerImg.style.display = "block";
+    }
+
+    // tampilkan foto grid biasa
+    if(item.foto){
+      let grid = document.createElement("div");
+      grid.className = "fotoGrid";
+      item.foto.forEach(f=>{
+        let img = document.createElement("img");
+        img.src = f;
+        grid.appendChild(img);
+      });
+      teksUcapan.insertAdjacentElement("afterend", grid);
+    }
+
+    // tampilkan video
+    if(item.video){
+      let vid = document.createElement("video");
+      vid.src = item.video;
+      vid.controls = true;
+      vid.style.width = "80%";
+      vid.style.marginTop = "15px";
+      teksUcapan.insertAdjacentElement("afterend", vid);
+
+      // tambah 2 foto kecil di bawah video
+      const fotoBawah = ["fotoA1.jpg","fotoA2.jpg"];
+      let gridVideo = document.createElement("div");
+      gridVideo.className = "fotoGrid";
+      fotoBawah.forEach(f=>{
+        let img = document.createElement("img");
+        img.src = f;
+        gridVideo.appendChild(img);
+      });
+      vid.insertAdjacentElement("afterend", gridVideo);
+    }
   }
 
   kirimBtn.addEventListener("click", () => {
@@ -153,6 +264,19 @@
   let musik = new Audio("musik.mp3");
   musik.loop = true;
   function playMusik(){ musik.play(); }
+
+  // 🎈 Balon muncul akhir
+  function munculkanBalon(){
+    const emoji = ["🎈","🎉","🎂","💐","🎊","🤍","🌷"];
+    for(let i=0;i<20;i++){
+      let b = document.createElement("div");
+      b.className = "balloon";
+      b.style.left = Math.random()*90 + "vw";
+      b.style.animationDuration = (4+Math.random()*4)+"s";
+      b.textContent = emoji[Math.floor(Math.random()*emoji.length)];
+      document.body.appendChild(b);
+    }
+  }
 </script>
 </body>
 </html>
