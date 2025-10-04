@@ -14,13 +14,21 @@
       color: white;
       height: 100vh;
       background: url('album1.jpg') no-repeat center/cover;
+      overflow-x: hidden;
     }
 
     .ctnr { position: relative; z-index: 2; margin-top: 40px; }
-    .lv img { width: 150px; cursor: pointer; }
+    .lv img { width: 150px; cursor: pointer; animation: pulse 1s infinite; }
     .lv p { margin-top: 10px; font-weight: 600; }
 
-    .ucapan, .pesanBox { display: none; margin-top: 30px; }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .ucapan, .pesanBox, .fotoBox, .videoBox, .balonBox { display: none; margin-top: 30px; }
+
     .ucapan img { width: 180px; display: block; margin: 0 auto 15px; }
     .ucapan p {
       font-size: 20px;
@@ -30,6 +38,7 @@
       display: inline-block;
       font-weight: 600;
     }
+
     .btn {
       padding: 10px 20px;
       margin-top: 15px;
@@ -42,6 +51,28 @@
       color: #fff;
       box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
     }
+
+    .fotoGrid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      justify-items: center;
+    }
+    .fotoGrid img {
+      width: 120px;
+      height: 120px;
+      border-radius: 15px;
+      object-fit: cover;
+    }
+
+    .videoBox video {
+      width: 90%;
+      max-width: 400px;
+      border-radius: 15px;
+      margin-top: 10px;
+    }
+    .videoBox h2 { margin-bottom: 15px; }
+
     .pesanBox input {
       padding: 10px;
       width: 80%;
@@ -59,6 +90,29 @@
       font-weight: 600;
       white-space: pre-wrap;
     }
+
+    .balonBox h2 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    .emoteArea {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .emote {
+      position: absolute;
+      bottom: 0;
+      animation: naik 5s linear forwards;
+    }
+    @keyframes naik {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(-110vh); opacity: 0; }
+    }
   </style>
 </head>
 <body>
@@ -75,9 +129,37 @@
       <button class="btn" id="nextBtn">[ Lanjut ]</button>
     </div>
 
+    <!-- Box Foto -->
+    <div class="fotoBox" id="fotoBox">
+      <h2>Happy Birthday yang ke 20 ya ndutt💐</h2>
+      <div class="fotoGrid">
+        <img src="foto1.jpg" alt="foto1">
+        <img src="foto2.jpg" alt="foto2">
+        <img src="foto3.jpg" alt="foto3">
+        <img src="foto4.jpg" alt="foto4">
+      </div>
+      <button class="btn" id="toVideoBtn">[ Lanjut ]</button>
+    </div>
+
+    <!-- Box Video -->
+    <div class="videoBox" id="videoBox">
+      <h2>Kenangan manis buat nduttt🌷🤍</h2>
+      <video controls>
+        <source src="video.mp4" type="video/mp4">
+      </video>
+      <button class="btn" id="toBalonBtn">[ Lanjut ]</button>
+    </div>
+
+    <!-- Box Balon & Emote -->
+    <div class="balonBox" id="balonBox">
+      <h2>🎂 Happy Birthday nduttt ke-20 💐🤍</h2>
+      <div class="emoteArea"></div>
+      <button class="btn" id="toPesanBtn">[ Lanjut ]</button>
+    </div>
+
     <!-- Box Pesan Manual -->
     <div class="pesanBox" id="pesanBox">
-      <p style="font-weight:600;">Sekarang giliran kamu kirim pesan buat Eja 💌</p>
+      <p style="font-weight:600;">Giliran ndutt buat pesan untuk ejaa 💌</p>
       <input type="text" id="inputPesan" placeholder="Ketik pesan disini...">
       <br/>
       <button class="btn" id="kirimBtn">Kirim Pesan</button>
@@ -100,10 +182,9 @@
     {gambar: "stiker11.gif", ucapan: "Semoga semua rencana indah ndutt terwujud satu per satu ✨"},
     {gambar: "stiker12.gif", ucapan: "Semoga selalu dilindungi dan dikuatkan dalam segala hal 🌈"},
     {gambar: "stiker13.gif", ucapan: "Olahraga jalan terus nda putus putus ✨"},
-    // ✨ Tambahan 14–16
     {gambar: "stiker14.gif", ucapan: "Teruss apaa yaa, ndutt makinn cantikk kaya loveni 💕"},
     {gambar: "stiker15.gif", ucapan: "Oiya ini rezza buatin web sederhana cuman yaa ndutt,ndaa terlalu mewah💐"},
-    {gambar: " stiker16.gif", ucapan: "Jangan lupa rumah filda abis isya ❤️"}, 
+    {gambar: "stiker16.gif", ucapan: "Jangan lupa rumah filda abis isya ❤️"}, 
     {gambar: "stiker17.gif", ucapan: "Terakhir Semoga kita dimudahkan sama Allah untuk bersama Amiin 🤍🌻"}
   ];
 
@@ -114,10 +195,14 @@
   const ucapanBox  = document.getElementById("ucapanBox");
   const stikerImg  = document.getElementById("stiker");
   const teksUcapan = document.getElementById("teksUcapan");
+  const fotoBox    = document.getElementById("fotoBox");
+  const videoBox   = document.getElementById("videoBox");
+  const balonBox   = document.getElementById("balonBox");
   const pesanBox   = document.getElementById("pesanBox");
   const inputPesan = document.getElementById("inputPesan");
   const kirimBtn   = document.getElementById("kirimBtn");
   const hasilPesan = document.getElementById("hasilPesan");
+  const emoteArea  = document.querySelector(".emoteArea");
 
   loveBtn.addEventListener("click", () => {
     klikText.style.display = "none";
@@ -132,8 +217,24 @@
       tampilkanUcapan();
     } else {
       ucapanBox.style.display = "none";
-      pesanBox.style.display  = "block"; // ✅ Muncul kotak pesan manual
+      fotoBox.style.display   = "block";
     }
+  });
+
+  document.getElementById("toVideoBtn").addEventListener("click", () => {
+    fotoBox.style.display = "none";
+    videoBox.style.display = "block";
+  });
+
+  document.getElementById("toBalonBtn").addEventListener("click", () => {
+    videoBox.style.display = "none";
+    balonBox.style.display = "block";
+    keluarkanEmote();
+  });
+
+  document.getElementById("toPesanBtn").addEventListener("click", () => {
+    balonBox.style.display = "none";
+    pesanBox.style.display = "block";
   });
 
   function tampilkanUcapan(){
@@ -149,6 +250,21 @@
       inputPesan.value = "";
     }
   });
+
+  function keluarkanEmote(){
+    const emotes = ["💐","🤍","🌷","🎉","🎊","🎈","🎂"];
+    for(let i=0; i<60; i++){
+      setTimeout(() => {
+        const span = document.createElement("span");
+        span.className = "emote";
+        span.innerText = emotes[Math.floor(Math.random()*emotes.length)];
+        span.style.left = Math.random()*100 + "vw";
+        span.style.fontSize = (20 + Math.random()*20) + "px";
+        emoteArea.appendChild(span);
+        setTimeout(()=> span.remove(), 5000);
+      }, i*150);
+    }
+  }
 
   let musik = new Audio("musik.mp3");
   musik.loop = true;
